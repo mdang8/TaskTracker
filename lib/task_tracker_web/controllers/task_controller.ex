@@ -18,7 +18,6 @@ defmodule TaskTrackerWeb.TaskController do
     username = Map.get(task_params, "assigned_id")
     assigned_user = TaskTracker.Accounts.get_user_by_name(username)
     new_params = Map.put(task_params, "assigned_id", assigned_user.id)
-    IO.inspect(new_params)
 
     case Social.create_task(new_params) do
       {:ok, task} ->

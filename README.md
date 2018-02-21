@@ -4,7 +4,7 @@
 
 This is a simple task tracking app. The two main general features are manipulating users and tasks. One can register a new user by entering an email and name to be associated with the account. That user account can then be modified, deleted, or simply displayed. Once a user account has been registered, that user can log-in to the app.
 
-Once logged in, the user will be redirected to the "tasks board" page, which lists all of the created tasks and includes a form for creating a new task. Tasks can be displayed, created, modified, and deleted.
+Once logged in, the user will be redirected to the "tasks board" page, which lists all of the created tasks and includes a form for creating a new task. The board only lists tasks that are completed, as indicated by the *Completed* flag. Tasks can be displayed, created, modified, and deleted.
 
 When logged in, there are three links at the top of the page under the "Log out" button that redirect to other pages. Users can use these links to quickly access the board, tasks, and users pages.
 

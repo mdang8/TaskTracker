@@ -10,16 +10,18 @@
 <h1>Your Tasks Board</h1>
 
 <%= Enum.map @tasks, fn(task) -> %>
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"><%= task.title %></h5>
-                    <p><%= task.description %></p>
-                    <p>Created by: <%= task.user.name %></p>
-                    <p>Assigned to: <%= task.assigned.name %></p>
+    <%= if (!task.completed) do %>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= task.title %></h5>
+                        <p><%= task.description %></p>
+                        <p>Created by: <%= task.user.name %></p>
+                        <p>Assigned to: <%= task.assigned.name %></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <% end %>
 <% end %>

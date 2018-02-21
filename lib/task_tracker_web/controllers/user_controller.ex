@@ -1,3 +1,4 @@
+# Attribution to lecture notes
 defmodule TaskTrackerWeb.UserController do
   use TaskTrackerWeb, :controller
 
