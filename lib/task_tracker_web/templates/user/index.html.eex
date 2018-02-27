@@ -17,6 +17,13 @@
   <tbody>
 <%= for user <- @users do %>
     <tr>
+        <td>
+            <button class="manage-button btn btn-secondary"
+                    data-user-id="<%= user.id %>"
+                    data-manage="<%= @manages[user.id] %>">
+                Manage
+            </button>
+        </td>
       <td><%= user.email %></td>
       <td><%= user.name %></td>
 

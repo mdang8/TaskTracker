@@ -1,4 +1,15 @@
+<script>
+    window.manage_path = '<%= manage_path(@conn, :index) %>';
+    window.current_user_id = '<%= @current_user.id %>';
+</script>
+
 <h2>Show User</h2>
+
+<button class="manage-button btn btn-secondary"
+        data-user-id="<%= @user.id %>"
+        data-manage="<%= @manages[@user.id] %>">
+    Manage
+</button>
 
 <ul>
 
@@ -10,6 +21,11 @@
   <li>
     <strong>Name:</strong>
     <%= @user.name %>
+  </li>
+
+  <li>
+    <strong>Underlings:</strong>
+    <%= @underlings %>
   </li>
 
 </ul>

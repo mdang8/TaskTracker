@@ -9,6 +9,7 @@ defmodule TaskTrackerWeb.UserController do
     current_user = conn.assigns[:current_user]
     users = Accounts.list_users()
     manages = TaskTracker.Social.manages_map_for(current_user.id)
+
     render(conn, "index.html", users: users, manages: manages)
   end
 
@@ -29,14 +30,20 @@ defmodule TaskTrackerWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
+    current_user = conn.assigns[:current_user]
     user = Accounts.get_user!(id)
-    render(conn, "show.html", user: user)
+    manages = TaskTracker.Social.manages_map_for(current_user.id)
+    underlings = TaskTracker.Social.underlings_for(user)
+
+    render(conn, "show.html", user: user, manages: manages, underlings: underlings)
   end
 
   def edit(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
     changeset = Accounts.change_user(user)
-    render(conn, "edit.html", user: user, changeset: changeset)
+    manages = TaskTracker.Social.manages_map_for(user.id)
+
+    render(conn, "edit.html", user: user, changeset: changeset, manages: manages)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do

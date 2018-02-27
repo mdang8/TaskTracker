@@ -7,6 +7,7 @@ defmodule TaskTracker.Social do
   alias TaskTracker.Repo
 
   alias TaskTracker.Social.Task
+  alias TaskTracker.Accounts.User
 
   @doc """
   Returns the list of tasks.
@@ -212,12 +213,21 @@ defmodule TaskTracker.Social do
     |> Enum.into(%{})
   end
 
-  def board_posts_for(user) do
-    user = Repo.preload(user, :managers)
-    managed_ids = Enum.map(user.managers, &(&1.id))
+  def board_tasks_for(user) do
+    user = Repo.preload(user, :underlings)
+    underlings_ids = Enum.map(user.underlings, &(&1.id))
 
     Repo.all(Task)
-    |> Enum.filter(&(Enum.member?(managed_ids, &1.user_id)))
+    |> Enum.filter(&(Enum.member?(underlings_ids, &1.user_id)))
+    |> Repo.preload(:user)
+  end
+
+  def underlings_for(user) do
+    user = Repo.preload(user, :underlings)
+    underlings_ids = Enum.map(user.underlings, &(&1.id))
+
+    Repo.all(User)
+    |> Enum.filter(&(Enum.member?(underlings_ids, &1.id)))
     |> Repo.preload(:user)
   end
 end
