@@ -99,4 +99,74 @@ function initManage() {
   updateButtons();
 }
 
+function startTime(taskId, time) {
+  let text = JSON.stringify({
+    time_block: {
+      start: time,
+      end: null,
+      task_id: taskId
+    }
+  });
+
+  $.ajax(time_block_path, {
+    method: "post",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+    success: (res) => {
+      console.log(res);
+    },
+    error: (res) => {
+      console.error(res);
+    }
+  });
+}
+
+function endTime(taskId, time) {
+  let text = JSON.stringify({
+    time_block: {
+      start_time: "",
+      end: time,
+      task_id: taskId
+    }
+  });
+
+  $.ajax(time_block_path, {
+    method: "post",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+    success: (res) => {
+      console.log(res);
+    },
+    error: (res) => {
+      console.error(res);
+    }
+  });
+}
+
+function timeClick(ev) {
+  let button = $(ev.target);
+  let timeType = button.data('time-type');
+  let taskId = button.data('task-id');
+  let time = button.data('time');
+
+  if (timeType === 'Start') {
+    startTime(taskId, time);
+  } else {
+    endTime(taskId, time);
+  }
+}
+
+function initTime() {
+  let timeButton = $('.time-button');
+
+  if (!timeButton) {
+    return;
+  }
+
+  timeButton.click(timeClick);
+}
+
 $(initManage);
+$(initTime);

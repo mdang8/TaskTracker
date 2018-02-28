@@ -6,18 +6,33 @@ defmodule TaskTrackerWeb.TaskController do
 
   def index(conn, _params) do
     tasks = Social.list_tasks()
+
     render(conn, "index.html", tasks: tasks)
   end
 
   def new(conn, _params) do
     changeset = Social.change_task(%Task{})
+
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"task" => task_params}) do
     username = Map.get(task_params, "assigned_id")
     assigned_user = TaskTracker.Accounts.get_user_by_name(username)
+
+    new_start = task_params["new_start_time"]
+    |> Enum.into(%{}, fn{k, v} -> {k, String.to_integer(v)} end)
+    new_end = task_params["new_end_time"]
+    |> Enum.into(%{}, fn{k, v} -> {k, String.to_integer(v)} end)
+
+    {:ok, start_time} = NaiveDateTime.new(new_start["year"], new_start["month"], new_start["day"],
+      new_start["hour"], new_start["minute"], new_start["second"])
+    {:ok, end_time} = NaiveDateTime.new(new_end["year"], new_end["month"], new_end["day"],
+      new_end["hour"], new_end["minute"], new_end["second"])
+
     new_params = Map.put(task_params, "assigned_id", assigned_user.id)
+    |> Map.put("new_start_time", start_time)
+    |> Map.put("new_end_time", end_time)
 
     case Social.create_task(new_params) do
       {:ok, task} ->
@@ -31,22 +46,36 @@ defmodule TaskTrackerWeb.TaskController do
 
   def show(conn, %{"id" => id}) do
     task = Social.get_task!(id)
-    blocks = Social.get_time_block_by_task_id(id)
-    IO.inspect(blocks)
+    blocks = Social.get_time_blocks_by_task_id(id)
 
-    render(conn, "show.html", task: task)
+    render(conn, "show.html", task: task, blocks: blocks)
   end
 
   def edit(conn, %{"id" => id}) do
     task = Social.get_task!(id)
     changeset = Social.change_task(task)
-    render(conn, "edit.html", task: task, changeset: changeset)
+    blocks = Social.get_time_blocks_by_task_id(id)
+
+    render(conn, "edit.html", task: task, changeset: changeset, blocks: blocks)
   end
 
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = Social.get_task!(id)
 
-    case Social.update_task(task, task_params) do
+    new_start = task_params["new_start_time"]
+    |> Enum.into(%{}, fn{k, v} -> {k, String.to_integer(v)} end)
+    new_end = task_params["new_end_time"]
+    |> Enum.into(%{}, fn{k, v} -> {k, String.to_integer(v)} end)
+
+    {:ok, start_time} = NaiveDateTime.new(new_start["year"], new_start["month"], new_start["day"],
+      new_start["hour"], new_start["minute"], new_start["second"])
+    {:ok, end_time} = NaiveDateTime.new(new_end["year"], new_end["month"], new_end["day"],
+      new_end["hour"], new_end["minute"], new_end["second"])
+
+    new_params = Map.put(task_params, "new_start_time", start_time)
+    |> Map.put("new_end_time", end_time)
+
+    case Social.update_task(task, new_params) do
       {:ok, task} ->
         conn
         |> put_flash(:info, "Task updated successfully.")

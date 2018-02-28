@@ -1,13 +1,6 @@
-<%= if @current_user do %>
-    <div class="row">
-        <div class="col">
-            <%= render TaskTrackerWeb.TaskView, "form.html",
-                Map.put(assigns, :action, task_path(@conn, :create)) %>
-        </div>
-    </div>
-<% end %>
 
-<h1>Your Tasks Board</h1>
+
+<h1>Task Report Board</h1>
 
 <%= Enum.map @tasks, fn(task) -> %>
     <%= if (!task.completed) do %>

@@ -8,6 +8,7 @@ defmodule TaskTracker.Social do
 
   alias TaskTracker.Social.Task
   alias TaskTracker.Accounts.User
+  alias TaskTracker.Social.TimeBlock
 
   @doc """
   Returns the list of tasks.
@@ -57,10 +58,27 @@ defmodule TaskTracker.Social do
 
   """
   def create_task(attrs \\ %{}) do
-    %Task{}
+    task_attrs = Map.drop(attrs, ["new_start_time", "new_end_time"])
+
+    user = TaskTracker.Accounts.get_user!(Map.get(attrs, "user_id"))
+    user_managers = get_underlings(user)
+    |> Enum.map(&[&1.id])
+    |> List.flatten()
+
+    task = %Task{}
     |> Repo.preload(:user)
-    |> Task.changeset(attrs)
+    |> Task.changeset(task_attrs)
     |> Repo.insert()
+
+    start_time = attrs["new_start_time"]
+    end_time = attrs["new_end_time"]
+    {:ok, t} = task
+    block_attrs = %{"start" => start_time,
+                    "end" => end_time,
+                    "task_id" => t.id}
+
+    if (check_duplicates(t.id, start_time, end_time)), do: create_time_block(block_attrs)
+    task
   end
 
   @doc """
@@ -76,9 +94,30 @@ defmodule TaskTracker.Social do
 
   """
   def update_task(%Task{} = task, attrs) do
-    task
+    task_attrs = Map.drop(attrs, ["start_time", "end_time", "new_start_time", "new_end_time"])
+    IO.inspect(task_attrs)
+
+    task = task
     |> Task.changeset(attrs)
     |> Repo.update()
+
+    start_time = attrs["new_start_time"]
+    end_time = attrs["new_end_time"]
+    {:ok, t} = task
+    block_attrs = %{"start" => start_time,
+                    "end" => end_time,
+                    "task_id" => t.id}
+
+    if (check_duplicates(t.id, start_time, end_time)), do: create_time_block(block_attrs)
+    task
+  end
+
+  defp check_duplicates(task_id, start_time, end_time) do
+    same_blocks = Repo.all(TimeBlock)
+    |> Enum.filter(fn(x) -> x.task_id == task_id and
+        NaiveDateTime.compare(x.start, start_time) == :eq and
+        NaiveDateTime.compare(x.end, start_time) == :eq end)
+    |> Enum.empty?()
   end
 
   @doc """
@@ -214,12 +253,14 @@ defmodule TaskTracker.Social do
   end
 
   def board_tasks_for(user) do
-    user = Repo.preload(user, :underlings)
-    underlings_ids = Enum.map(user.underlings, &(&1.id))
+    user = Repo.preload(user, :managers)
+    underlings_ids = [user.id | Enum.map(user.managers, &(&1.id))]
+
 
     Repo.all(Task)
-    |> Enum.filter(&(Enum.member?(underlings_ids, &1.user_id)))
+    |> Enum.filter(&(Enum.member?(underlings_ids, &1.assigned_id)))
     |> Repo.preload(:user)
+    |> Repo.preload(:assigned)
   end
 
   def get_managers(user) do
@@ -238,7 +279,6 @@ defmodule TaskTracker.Social do
     |> Enum.filter(&(Enum.member?(underlings_ids, &1.id)))
   end
 
-  alias TaskTracker.Social.TimeBlock
 
   @doc """
   Returns the list of blocks.
@@ -334,10 +374,11 @@ defmodule TaskTracker.Social do
     TimeBlocks.changeset(time_block, %{})
   end
 
-  def get_time_block_by_task_id(task_id) do
+  def get_time_blocks_by_task_id(task_id) do
     Repo.all(from b in TimeBlock,
              where: b.task_id == ^task_id)
-    |> Enum.map(&({&1.id, &1.start, &1.end}))
-    |> Enum.into(%{})
+    |> Enum.map(&(%{"id": &1.id,
+                    "start": NaiveDateTime.truncate(&1.start, :second),
+                    "end": NaiveDateTime.truncate(&1.end, :second)}))
   end
 end

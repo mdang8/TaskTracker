@@ -22,6 +22,14 @@
     <%= @task.description %>
   </li>
 
+  <li>
+    <strong>Time Blocks:</strong>
+    <ul>
+      <%= for block <- @blocks do %>
+        <li><strong>Start:</strong> <%= block.start %> | <strong>End:</strong> <%= block.end %></li>
+      <% end %>
+    </ul>
+  </li>
 
   <li>
     <strong>Completed:</strong>

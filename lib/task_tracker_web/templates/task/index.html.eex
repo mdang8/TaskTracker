@@ -1,8 +1,15 @@
+<script>
+    window.time_block_path = '<%= time_block_path(@conn, :index) %>';
+    window.current_user_id = '<%= @current_user.id %>';
+</script>
+
 <h2>Listing Tasks</h2>
 
 <table class="table">
   <thead>
     <tr>
+      <th></th>
+      <th></th>
       <th>Title</th>
       <th>Description</th>
       <th>Completed</th>
@@ -13,6 +20,27 @@
   <tbody>
 <%= for task <- @tasks do %>
     <tr>
+      <%= if @current_user.id == task.assigned_id do %>
+          <td>
+            <button class="time-button btn btn-secondary"
+                    data-task-id="<%= task.id %>"
+                    data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
+                    data-time-type="Start">
+              Start
+            </button>
+          </td>
+          <td>
+            <button class="time-button btn btn-secondary"
+                    data-task-id="<%= task.id %>"
+                    data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
+                    data-time-type="End">
+              End
+            </button>
+          </td>
+      <% else %>
+        <td></td>
+        <td></td>
+      <% end %>
       <td><%= task.title %></td>
       <td><%= task.description %></td>
       <td><%= task.completed %></td>

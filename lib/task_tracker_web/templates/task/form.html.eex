@@ -31,17 +31,47 @@
         <%= error_tag f, :description %>
     </div>
 
-    <div class="form-group">
-        <%= label f, :start_time, class: "control-label" %>
-        <%= text_input f, :start_time, class: "form-control" %>
-        <%= error_tag f, :start_time %>
-    </div>
+    <%= if assigns[:blocks] do %>
+        <%= for {block, i} <- Enum.with_index(@blocks) do %>
+            <div class="form-group">
+                <%= label f, "Start Block ##{i + 1}", class: "control-label" %>
+                <%= datetime_select f, :start_time, second: [], default: nil, class: "form-control",
+                value: block.start %>
+                <%= error_tag f, :start_time %>
+            </div>
 
-    <div class="form-group">
-        <%= label f, :end_time, class: "control-label" %>
-        <%= text_input f, :end_time, class: "form-control" %>
-        <%= error_tag f, :end_time %>
-    </div>
+            <div class="form-group">
+                <%= label f, "End Block ##{i + 1}", class: "control-label" %>
+                <%= datetime_select f, :end_time, second: [], default: nil, class: "form-control",
+                value: block.end %>
+                <%= error_tag f, :end_time %>
+            </div>
+        <% end %>
+        <div class="form-group">
+            <%= label f, "New Start Block", class: "control-label" %>
+            <%= datetime_select f, :new_start_time, second: [], default: nil,
+            class: "form-control" %>
+            <%= error_tag f, :new_start_time %>
+        </div>
+
+        <div class="form-group">
+            <%= label f, "New End Block", class: "control-label" %>
+            <%= datetime_select f, :new_end_time, second: [], default: nil, class: "form-control" %>
+            <%= error_tag f, :new_end_time %>
+        </div>
+    <% else %>
+        <div class="form-group">
+            <%= label f, :new_start_time, class: "control-label" %>
+            <%= datetime_select f, :new_start_time, second: [], class: "form-control" %>
+            <%= error_tag f, :new_start_time %>
+        </div>
+
+        <div class="form-group">
+            <%= label f, :new_end_time, class: "control-label" %>
+            <%= datetime_select f, :new_end_time, second: [], class: "form-control" %>
+            <%= error_tag f, :new_end_time %>
+        </div>
+    <% end %>
 
     <div class="form-group">
         <%= label f, :completed, class: "control-label" %>
