@@ -1,5 +1,11 @@
+<script>
+    window.manage_path = '<%= manage_path(@conn, :index) %>';
+    window.current_user_id = '<%= @current_user.id %>';
+    console.log(window.manage_path);
+</script>
+
 <h2>Edit User</h2>
 
-<%= render "form.html", Map.put(assigns, :action, user_path(@conn, :update, @user)) %>
+<%= render "edit_form.html", Map.put(assigns, :action, user_path(@conn, :update, @user)) %>
 
 <span><%= link "Back", to: user_path(@conn, :index) %></span>

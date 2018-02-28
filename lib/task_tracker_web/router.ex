@@ -34,6 +34,7 @@ defmodule TaskTrackerWeb.Router do
   scope "/api/v1", TaskTrackerWeb do
     pipe_through :api
     resources "/manages", ManageController, except: [:new, :edit]
+    resources "/blocks", TimeBlockController, except: [:new, :edit]
   end
 
   # Other scopes may use custom stacks.

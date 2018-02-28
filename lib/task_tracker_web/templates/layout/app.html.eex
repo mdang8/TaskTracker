@@ -19,7 +19,7 @@
                         Logged in as: <%= @current_user.name %> |
                         <%= link "Log out", to: "/session", method: :delete %>
                     </p>
-                <%= else %>
+                <% else %>
                     <p>Not currently logged in.</p>
                 <% end %>
             </div>
