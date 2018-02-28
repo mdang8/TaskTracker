@@ -1,4 +1,16 @@
+<script>
+    window.manage_path = '<%= manage_path(@conn, :index) %>';
+    window.current_user_id = '<%= @current_user.id %>';
+    console.log('<%= @underlings %>');
+</script>
+
 <h2>Show User</h2>
+
+<button class="manage-button btn btn-secondary"
+        data-user-id="<%= @user.id %>"
+        data-manage="<%= @manages[@user.id] %>">
+    Manage
+</button>
 
 <ul>
 
@@ -12,7 +24,17 @@
     <%= @user.name %>
   </li>
 
+  <li>
+    <strong>Managers:</strong>
+    <%= @managers %>
+  </li>
+
+  <li>
+    <strong>Underlings:</strong>
+    <%= @underlings %>
+  </li>
+
 </ul>
 
 <span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
-<span><%= link "Back", to: user_path(@conn, :index) %></span>
+<span><%= link "Back to login", to: page_path(@conn, :index) %></span>
