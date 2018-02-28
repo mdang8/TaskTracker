@@ -322,9 +322,19 @@ defmodule TaskTracker.Social do
 
   """
   def create_time_block(attrs \\ %{}) do
-    %TimeBlock{}
-    |> TimeBlock.changeset(attrs)
-    |> Repo.insert()
+    IO.inspect(attrs)
+    new_attrs = attrs
+    if (attrs["end"] != nil and attrs["start"] == attrs["end"]) do
+      old_block = Repo.all(from b in TimeBlock,
+                           where: b.task_id == ^attrs["task_id"])
+      |> Enum.find(fn(x) -> x.end == nil end)
+
+      update_time_block(old_block, Map.put(new_attrs, "start", old_block.start))
+    else
+      %TimeBlock{}
+      |> TimeBlock.changeset(new_attrs)
+      |> Repo.insert()
+    end
   end
 
   @doc """
@@ -377,8 +387,11 @@ defmodule TaskTracker.Social do
   def get_time_blocks_by_task_id(task_id) do
     Repo.all(from b in TimeBlock,
              where: b.task_id == ^task_id)
-    |> Enum.map(&(%{"id": &1.id,
-                    "start": NaiveDateTime.truncate(&1.start, :second),
-                    "end": NaiveDateTime.truncate(&1.end, :second)}))
+    |> Enum.map(fn(x) ->
+      end_time = if (x.end != nil), do: NaiveDateTime.truncate(x.end, :second), else: nil
+      %{"id": x.id,
+        "start": NaiveDateTime.truncate(x.start, :second),
+        "end": end_time
+      } end)
   end
 end

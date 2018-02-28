@@ -16,6 +16,6 @@ defmodule TaskTracker.Social.TimeBlock do
   def changeset(%TimeBlock{} = time_block, attrs) do
     time_block
     |> cast(attrs, [:start, :end, :task_id])
-    |> validate_required([:start, :end, :task_id])
+    |> validate_required([:start, :task_id])
   end
 end

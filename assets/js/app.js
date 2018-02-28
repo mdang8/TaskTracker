@@ -104,7 +104,8 @@ function startTime(taskId, time) {
     time_block: {
       start: time,
       end: null,
-      task_id: taskId
+      task_id: taskId,
+      button: true
     }
   });
 
@@ -125,9 +126,10 @@ function startTime(taskId, time) {
 function endTime(taskId, time) {
   let text = JSON.stringify({
     time_block: {
-      start_time: "",
+      start: time,
       end: time,
-      task_id: taskId
+      task_id: taskId,
+      button: true
     }
   });
 
