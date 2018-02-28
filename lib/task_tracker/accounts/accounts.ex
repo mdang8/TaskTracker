@@ -37,6 +37,7 @@ defmodule TaskTracker.Accounts do
   """
   def get_user!(id) do
     Repo.get!(User, id)
+    |> Repo.preload(:underlings)
   end
 
   @doc """

@@ -33,9 +33,18 @@ defmodule TaskTrackerWeb.UserController do
     current_user = conn.assigns[:current_user]
     user = Accounts.get_user!(id)
     manages = TaskTracker.Social.manages_map_for(current_user.id)
-    underlings = TaskTracker.Social.underlings_for(user)
+    # gets the list of managers and joins it to a comma-separated string
+    managers = TaskTracker.Social.get_managers(user)
+    |> Enum.map(&[&1.name])
+    |> List.flatten()
+    |> Enum.join(", ")
+    # same thing for underlings
+    underlings = TaskTracker.Social.get_underlings(user)
+    |> Enum.map(&[&1.name])
+    |> List.flatten()
+    |> Enum.join(", ")
 
-    render(conn, "show.html", user: user, manages: manages, underlings: underlings)
+    render(conn, "show.html", user: user, manages: manages, managers: managers, underlings: underlings)
   end
 
   def edit(conn, %{"id" => id}) do

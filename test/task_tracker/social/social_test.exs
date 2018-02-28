@@ -126,4 +126,62 @@ defmodule TaskTracker.SocialTest do
       assert %Ecto.Changeset{} = Social.change_manage(manage)
     end
   end
+
+  describe "blocks" do
+    alias TaskTracker.Social.TimeBlocks
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def time_blocks_fixture(attrs \\ %{}) do
+      {:ok, time_blocks} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Social.create_time_blocks()
+
+      time_blocks
+    end
+
+    test "list_blocks/0 returns all blocks" do
+      time_blocks = time_blocks_fixture()
+      assert Social.list_blocks() == [time_blocks]
+    end
+
+    test "get_time_blocks!/1 returns the time_blocks with given id" do
+      time_blocks = time_blocks_fixture()
+      assert Social.get_time_blocks!(time_blocks.id) == time_blocks
+    end
+
+    test "create_time_blocks/1 with valid data creates a time_blocks" do
+      assert {:ok, %TimeBlocks{} = time_blocks} = Social.create_time_blocks(@valid_attrs)
+    end
+
+    test "create_time_blocks/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Social.create_time_blocks(@invalid_attrs)
+    end
+
+    test "update_time_blocks/2 with valid data updates the time_blocks" do
+      time_blocks = time_blocks_fixture()
+      assert {:ok, time_blocks} = Social.update_time_blocks(time_blocks, @update_attrs)
+      assert %TimeBlocks{} = time_blocks
+    end
+
+    test "update_time_blocks/2 with invalid data returns error changeset" do
+      time_blocks = time_blocks_fixture()
+      assert {:error, %Ecto.Changeset{}} = Social.update_time_blocks(time_blocks, @invalid_attrs)
+      assert time_blocks == Social.get_time_blocks!(time_blocks.id)
+    end
+
+    test "delete_time_blocks/1 deletes the time_blocks" do
+      time_blocks = time_blocks_fixture()
+      assert {:ok, %TimeBlocks{}} = Social.delete_time_blocks(time_blocks)
+      assert_raise Ecto.NoResultsError, fn -> Social.get_time_blocks!(time_blocks.id) end
+    end
+
+    test "change_time_blocks/1 returns a time_blocks changeset" do
+      time_blocks = time_blocks_fixture()
+      assert %Ecto.Changeset{} = Social.change_time_blocks(time_blocks)
+    end
+  end
 end

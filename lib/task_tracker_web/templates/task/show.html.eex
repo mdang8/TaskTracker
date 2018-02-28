@@ -22,10 +22,6 @@
     <%= @task.description %>
   </li>
 
-  <li>
-    <strong>Duration:</strong>
-    <%= @task.duration %>
-  </li>
 
   <li>
     <strong>Completed:</strong>

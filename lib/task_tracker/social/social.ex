@@ -222,12 +222,122 @@ defmodule TaskTracker.Social do
     |> Repo.preload(:user)
   end
 
-  def underlings_for(user) do
+  def get_managers(user) do
     user = Repo.preload(user, :underlings)
-    underlings_ids = Enum.map(user.underlings, &(&1.id))
+    manager_ids = Enum.map(user.underlings, &(&1.id))
+
+    Repo.all(User)
+    |> Enum.filter(&(Enum.member?(manager_ids, &1.id)))
+  end
+
+  def get_underlings(user) do
+    user = Repo.preload(user, :managers)
+    underlings_ids = Enum.map(user.managers, &(&1.id))
 
     Repo.all(User)
     |> Enum.filter(&(Enum.member?(underlings_ids, &1.id)))
-    |> Repo.preload(:user)
+  end
+
+  alias TaskTracker.Social.TimeBlock
+
+  @doc """
+  Returns the list of blocks.
+
+  ## Examples
+
+      iex> list_blocks()
+      [%TimeBlocks{}, ...]
+
+  """
+  def list_blocks do
+    Repo.all(TimeBlock)
+  end
+
+  @doc """
+  Gets a single time_block.
+
+  Raises `Ecto.NoResultsError` if the Time block does not exist.
+
+  ## Examples
+
+      iex> get_time_block!(123)
+      %TimeBlock{}
+
+      iex> get_time_block!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_time_block!(id), do: Repo.get!(TimeBlock, id)
+
+  @doc """
+  Creates a time_block.
+
+  ## Examples
+
+      iex> create_time_block(%{field: value})
+      {:ok, %TimeBlock{}}
+
+      iex> create_time_block(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_time_block(attrs \\ %{}) do
+    %TimeBlock{}
+    |> TimeBlock.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a time_block.
+
+  ## Examples
+
+      iex> update_time_block(time_block, %{field: new_value})
+      {:ok, %TimeBlock{}}
+
+      iex> update_time_block(time_block, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_time_block(%TimeBlock{} = time_block, attrs) do
+    time_block
+    |> TimeBlock.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a TimeBlock.
+
+  ## Examples
+
+      iex> delete_time_block(time_block)
+      {:ok, %TimeBlock{}}
+
+      iex> delete_time_block(time_block)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_time_block(%TimeBlock{} = time_block) do
+    Repo.delete(time_block)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking time_block changes.
+
+  ## Examples
+
+      iex> change_time_block(time_block)
+      %Ecto.Changeset{source: %TimeBlock{}}
+
+  """
+  def change_time_block(%TimeBlock{} = time_block) do
+    TimeBlocks.changeset(time_block, %{})
+  end
+
+  def get_time_block_by_task_id(task_id) do
+    Repo.all(from b in TimeBlock,
+             where: b.task_id == ^task_id)
+    |> Enum.map(&({&1.id, &1.start, &1.end}))
+    |> Enum.into(%{})
   end
 end

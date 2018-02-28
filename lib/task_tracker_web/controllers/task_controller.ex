@@ -31,6 +31,9 @@ defmodule TaskTrackerWeb.TaskController do
 
   def show(conn, %{"id" => id}) do
     task = Social.get_task!(id)
+    blocks = Social.get_time_block_by_task_id(id)
+    IO.inspect(blocks)
+
     render(conn, "show.html", task: task)
   end
 

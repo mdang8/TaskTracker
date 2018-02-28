@@ -23,23 +23,24 @@ import 'phoenix_html';
 import $ from 'jquery';
 
 function updateButtons() {
-  let button = $('.manage-button')[0];
-  let user_id = $(button).data('user-id');
-  let manage = $(button).data('manage');
+  $('.manage-button').each((_, button) => {
+    let user_id = $(button).data('user-id');
+    let manage = $(button).data('manage');
 
-  if (manage != '') {
-    $(button).text('Unmanage');
-  } else {
-    $(button).text('Manage');
-  }
+    if (manage != '') {
+      $(button).text('Unmanage');
+    } else {
+      $(button).text('Manage');
+    }
+  });
 }
 
 function setButton(user_id, value) {
-  let button = $('.manage-button')[0];
-
-  if (user_id == $(button).data('user-id')) {
-    $(button).data('manage', value);
-  }
+  $('.manage-button').each((_, button) => {
+    if (user_id == $(button).data('user-id')) {
+      $(button).data('manage', value);
+    }
+  });
 
   updateButtons();
 }
