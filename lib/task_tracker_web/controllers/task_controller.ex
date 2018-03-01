@@ -31,17 +31,24 @@ defmodule TaskTrackerWeb.TaskController do
     {:ok, end_time} = NaiveDateTime.new(new_end["year"], new_end["month"], new_end["day"],
       new_end["hour"], new_end["minute"], new_end["second"])
 
-    new_params = Map.put(task_params, "assigned_id", assigned_user.id)
-    |> Map.put("new_start_time", start_time)
-    |> Map.put("new_end_time", end_time)
+    # checks for invalid end times
+    if (NaiveDateTime.compare(start_time, end_time) == :gt) do
+      conn
+      |> put_flash(:error, "Invalid end time.")
+      |> render("index.html", tasks: Social.list_tasks(), managers: Social.all_managers())
+    else
+      new_params = Map.put(task_params, "assigned_id", assigned_user.id)
+      |> Map.put("new_start_time", start_time)
+      |> Map.put("new_end_time", end_time)
 
-    case Social.create_task(new_params) do
-      {:ok, task} ->
-        conn
-        |> put_flash(:info, "Task created successfully.")
-        |> redirect(to: task_path(conn, :show, task))
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+      case Social.create_task(new_params) do
+        {:ok, task} ->
+          conn
+          |> put_flash(:info, "Task created successfully.")
+          |> redirect(to: task_path(conn, :show, task))
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset)
+      end
     end
   end
 
