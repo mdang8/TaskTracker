@@ -6,8 +6,9 @@ defmodule TaskTrackerWeb.TaskController do
 
   def index(conn, _params) do
     tasks = Social.list_tasks()
+    managers = Social.all_managers()
 
-    render(conn, "index.html", tasks: tasks)
+    render(conn, "index.html", tasks: tasks, managers: managers)
   end
 
   def new(conn, _params) do

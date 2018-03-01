@@ -279,6 +279,12 @@ defmodule TaskTracker.Social do
     |> Enum.filter(&(Enum.member?(underlings_ids, &1.id)))
   end
 
+  def all_managers() do
+    Repo.all(Manage)
+    |> Enum.map(&(&1.underling_id))
+    |> Enum.uniq()
+  end
+
 
   @doc """
   Returns the list of blocks.

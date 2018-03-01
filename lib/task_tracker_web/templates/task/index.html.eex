@@ -6,53 +6,58 @@
 <h2>Listing Tasks</h2>
 
 <table class="table">
-  <thead>
-    <tr>
-      <th></th>
-      <th></th>
-      <th>Title</th>
-      <th>Description</th>
-      <th>Completed</th>
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Completed</th>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for task <- @tasks do %>
-    <tr>
-      <%= if @current_user.id == task.assigned_id do %>
-          <td>
-            <button class="time-button btn btn-secondary"
-                    data-task-id="<%= task.id %>"
-                    data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
-                    data-time-type="Start">
-              Start
-            </button>
-          </td>
-          <td>
-            <button class="time-button btn btn-secondary"
-                    data-task-id="<%= task.id %>"
-                    data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
-                    data-time-type="End">
-              End
-            </button>
-          </td>
-      <% else %>
-        <td></td>
-        <td></td>
-      <% end %>
-      <td><%= task.title %></td>
-      <td><%= task.description %></td>
-      <td><%= task.completed %></td>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for task <- @tasks do %>
+            <tr>
+                <%= if @current_user.id == task.assigned_id do %>
+                    <td>
+                    <button class="time-button btn btn-secondary"
+                            data-task-id="<%= task.id %>"
+                            data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
+                            data-time-type="Start">
+                        Start
+                    </button>
+                    </td>
+                    <td>
+                    <button class="time-button btn btn-secondary"
+                            data-task-id="<%= task.id %>"
+                            data-time="<%= NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second) %>"
+                            data-time-type="End">
+                        End
+                    </button>
+                    </td>
+                    <% else %>
+                    <td></td>
+                    <td></td>
+                <% end %>
 
-      <td class="text-right">
-        <span><%= link "Show", to: task_path(@conn, :show, task), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: task_path(@conn, :edit, task), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: task_path(@conn, :delete, task), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
+                <td><%= task.title %></td>
+                <td><%= task.description %></td>
+                <td><%= task.completed %></td>
+
+                <td class="text-right">
+                    <span><%= link "Show", to: task_path(@conn, :show, task), class: "btn btn-default btn-xs" %></span>
+                    <%= if @current_user.id in @managers do %>
+                        <span><%= link "Edit", to: task_path(@conn, :edit, task), class: "btn btn-default btn-xs" %></span>
+                        <span><%= link "Delete", to: task_path(@conn, :delete, task), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+                    <% end %>
+                </td>
+            </tr>
+        <% end %>
+    </tbody>
 </table>
 
-<span><%= link "New Task", to: task_path(@conn, :new) %></span>
+<%= if @current_user.id in @managers do %>
+    <span><%= link "New Task", to: task_path(@conn, :new) %></span>
+<% end %>
